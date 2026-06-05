@@ -31,4 +31,5 @@ public class UserService {
         }
         return userRepository.findByUsername(username.trim());
     }
+
 }

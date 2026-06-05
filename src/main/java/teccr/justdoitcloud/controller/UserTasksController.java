@@ -48,4 +48,20 @@ public class UserTasksController {
         taskService.addTaskToUser(user, newTask);
         return "redirect:/user/tasks";
     }
+
+    @PostMapping("/advance")
+    // Se recibe parámetro de id task (que es primary key) según definión
+    // en data.Task, ya que esta será la tarea a evaluar, en la capa de servicio
+    // y según su estatus actualizar
+    public String taskAdvance(@RequestParam("taskId") Long taskId){
+        log.info("Entró a taskAdvance");
+        // Se llama a capa de servicio que actualiza las tareas, según sea su estatus
+        taskService.updateTaskStatusToUser(taskId);
+        // Redirecciona plantilla para actualizar estatus del dom
+        return "redirect:/user/tasks";
+    }
+
+
+
+
 }

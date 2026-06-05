@@ -52,54 +52,119 @@
             <!-- PENDING -->
             <section class="tasks-group">
                 <h3>Pendientes</h3>
+
+                <!-- Si NO existen tareas con estado PENDING muestra este mensaje -->
                 <div th:if="${#lists.isEmpty(user.tasks.?[status.name() == 'PENDING'])}">
                     No hay tareas pendientes.
                 </div>
+
+                <!-- Formulario asociado al objeto newTask enviado por el controlador -->
                 <form  method="POST" class="new-task-form" th:object="${newTask}">
+
                     <!-- Solo capturamos la descripción -->
                     <label for="description">Nueva tarea:</label>
+
+                    <!-- Vincula este input con newTask.description -->
                     <input th:field="*{description}" type="text" placeholder="Describe la tarea..."
                     />
+
+                    <!-- Si description tiene errores de validación los muestra aquí -->
                     <span class="validationError"
                           th:if="${#fields.hasErrors('description')}"
                           th:errors="*{description}">Desc error</span>
 
+                    <!-- Vincula el select con newTask.deadline -->
                     <select th:field="*{deadline}">
                         <option value="">Fecha límite:</option>
                         <option value="1WEEK">1 semana</option>
                         <option value="1MONTH">1 mes</option>
                     </select>
 
-
-                    <!-- Estado fijo a PENDING -->
+                    <!-- Campo oculto que siempre envía status=PENDING -->
                     <input type="hidden" name="status" value="PENDING" />
 
                     <button type="submit">Crear tarea</button>
                 </form>
+
+                <!-- Recorre únicamente las tareas cuyo estado sea PENDING -->
                 <div th:each="task : ${user.tasks.?[status.name() == 'PENDING']}">
+
                     <div class="task-item pending">
+
+                        <!-- Muestra task.description -->
                         <div class="task-desc" th:text="${task.description}">Descripción de la tarea...</div>
+
                         <div>
+
                             <strong>Fecha límite:</strong>
+
+                            <!-- Si task.deadline tiene valor:formatea la fecha
+                                Si es null: muestra "No especificada" -->
+
                             <span th:text="${task.deadline != null} ? ${#temporals.format(task.deadline, 'dd/MMMM/yyyy')} : 'No especificada'">
                                 No especificada
                             </span>
+
                         </div>
+
+                        <!-- Botón para avanzar tarea -->
+                        <form th:action="@{/user/tasks/advance}" method="post">
+                            <input type="hidden"
+                                   name="taskId"
+                                   th:value="${task.id}" />
+
+                            <button type="submit">
+                                Avanzar
+                            </button>
+                        </form>
+
                     </div>
+
                 </div>
+
             </section>
 
             <!-- INPROGRESS -->
             <section class="tasks-group">
+
                 <h3>En progreso</h3>
+
                 <div th:if="${#lists.isEmpty(user.tasks.?[status.name() == 'INPROGRESS'])}">
                     No hay tareas en progreso.
                 </div>
+
                 <div th:each="task : ${user.tasks.?[status.name() == 'INPROGRESS']}">
+
                     <div class="task-item inprogress">
-                        <div class="task-desc" th:text="${task.description}">Descripción de la tarea...</div>
+                        <div class="task-desc" th:text="${task.description}">
+                            Descripción de la tarea...</div>
                     </div>
+
+                    <div>
+
+                        <strong>Fecha límite:</strong>
+
+                        <!-- Si task.deadline tiene valor:formatea la fecha
+                            Si es null: muestra "No especificada" -->
+
+                        <span th:text="${task.deadline != null} ? ${#temporals.format(task.deadline, 'dd/MMMM/yyyy')} : 'No especificada'">
+                                No especificada
+                            </span>
+
+                    </div>
+
+                    <form th:action="@{/user/tasks/advance}" method="post">
+                        <input type="hidden"
+                               name="taskId"
+                               th:value="${task.id}" />
+
+                        <button type="submit">
+                            Avanzar
+                        </button>
+                    </form>
+
                 </div>
+
             </section>
 
             <!-- DONE -->
